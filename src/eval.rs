@@ -17,8 +17,28 @@ use std::collections::HashSet;
 ///   `(λx. (λy. x)) z` evaluates to `λy. z`.
 ///   `(λx. (λy. x)) a b` evaluates to `a`.
 pub fn eval(term: &Term) -> Term {
-    term.clone()
     // TODO: "Implement the eval function")
+    match term {
+        Term::Var(txt) => {
+            var(txt)
+        }
+        Term::Abs(txt, term) => {
+            Term::Abs(txt.clone(), Box::new(eval(term)))
+        }
+        Term::App(t1, t2) => {
+            match *t1.clone() {
+                Term::Abs(var, term) => {
+                    substitute(&eval(&term), &var, &eval(t2))
+                }
+                _ => {
+                    // didn't quite get this lambda stuff
+                    // I guess in case of a variable or application this should throw an exception.
+                    // at least according to Wikipedia: (M N) applies *function* M to argument N.
+                    var("test")
+                }
+            }
+        }
+    }
 }
 
 
